@@ -1,6 +1,7 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { store } from '../models/store';
 import { RiskEngine } from './riskEngine';
+import { EventValidationPipeline } from './validationPipeline';
 import { IChatMessage, ITask, IVendor } from '../types';
 
 export interface AIProcessResult {
@@ -494,27 +495,31 @@ Instructions:
 
   private static applyStateModifications(eventId: string, mods: Record<string, any>) {
     if (mods.vendorGapCategory) {
-      const vendors = store.getVendors(eventId);
-      const v = vendors.find((vend) => vend.category === mods.vendorGapCategory);
-      if (v) store.updateVendor(v.id, { status: 'gap' });
+      const validation = EventValidationPipeline.validateProposedAction(eventId, 'FLAG_VENDOR_GAP', {
+        category: mods.vendorGapCategory,
+      });
+      if (validation.isValid) {
+        EventValidationPipeline.executeValidatedAction(eventId, validation, 'PlanCraft AI Engine');
+      }
     }
-    if (mods.capacityAllocated || mods.capacityRequired) {
-      store.updateLogistics(eventId, {
+    if (mods.capacityAllocated !== undefined || mods.capacityRequired !== undefined) {
+      const validation = EventValidationPipeline.validateProposedAction(eventId, 'MODIFY_CAPACITY', {
         fleetCapacityAllocated: mods.capacityAllocated,
         fleetCapacityRequired: mods.capacityRequired,
       });
+      if (validation.isValid) {
+        EventValidationPipeline.executeValidatedAction(eventId, validation, 'PlanCraft AI Engine');
+      }
     }
     if (mods.newTask) {
-      store.addTask({
-        id: `tsk_${Date.now()}`,
-        eventId,
+      const validation = EventValidationPipeline.validateProposedAction(eventId, 'CREATE_TASK', {
         title: mods.newTask.title,
-        category: mods.newTask.category || 'general',
-        status: 'todo',
-        priority: mods.newTask.priority || 'medium',
-        assignee: 'Event Team',
-        dueDate: '2025-11-14',
+        category: mods.newTask.category,
+        priority: mods.newTask.priority,
       });
+      if (validation.isValid) {
+        EventValidationPipeline.executeValidatedAction(eventId, validation, 'PlanCraft AI Engine');
+      }
     }
   }
 }

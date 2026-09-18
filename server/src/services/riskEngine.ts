@@ -30,6 +30,10 @@ export class RiskEngine {
           message: `Current contracted transit accommodates ${logistics.fleetCapacityAllocated} PAX, but required group transit is ${logistics.fleetCapacityRequired} PAX.`,
           impact: `${deficit} guests/employees face transit delays, threatening on-time arrival for scheduled sessions.`,
           resolved: false,
+          riskScore: 92,
+          confidence: 0.98,
+          financialImpact: 45000,
+          operationalImpact: 'Transit logistics bottleneck directly threatening the arrival schedule of 50 attendees.',
           recommendedActions: [
             {
               id: `act_cap_book_${Date.now()}`,
@@ -67,6 +71,10 @@ export class RiskEngine {
           message: 'Contracted photography crew notified cancellation for the Grand Reception sub-event.',
           impact: 'Critical moment captures, family portraits, and live reception feeds are at risk.',
           resolved: false,
+          riskScore: 89,
+          confidence: 0.95,
+          financialImpact: 150000,
+          operationalImpact: 'Total loss of media coverage for the flagship Grand Reception evening.',
           recommendedActions: [
             {
               id: `act_photo_rfp_${Date.now()}`,
@@ -105,6 +113,10 @@ export class RiskEngine {
           message: 'Catering contract requires locked headcount by Nov 7 to avoid 15% rush procurement surcharges.',
           impact: 'Budget variance of ₹60,000+ if count is not submitted within 7 days.',
           resolved: false,
+          riskScore: 78,
+          confidence: 0.94,
+          financialImpact: 60000,
+          operationalImpact: 'Vendor contractual penalty and procurement delays if guest count is not locked.',
           recommendedActions: [
             {
               id: `act_rsvp_${Date.now()}`,

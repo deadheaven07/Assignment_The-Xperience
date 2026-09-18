@@ -1,4 +1,17 @@
-import { IEvent, IEventSnapshot, IChatMessage, IRiskAlert, ITask, IVendor, ILogistics, ISubEvent } from './types';
+import {
+  IEvent,
+  IEventSnapshot,
+  IChatMessage,
+  IRiskAlert,
+  ITask,
+  IVendor,
+  ILogistics,
+  ISubEvent,
+  IAuditLogEntry,
+  INotification,
+  IWhatIfSimulation,
+  IDailyBriefing,
+} from './types';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
 
@@ -150,6 +163,43 @@ class ApiClient {
     return this.request<{ success: boolean; message: string } & IEventSnapshot>('/risks/action', {
       method: 'POST',
       body: JSON.stringify({ actionType, payload }),
+    });
+  }
+
+  // Audit Logs
+  public async getAuditLogs(eventId: string): Promise<{ success: boolean; auditLogs: IAuditLogEntry[] }> {
+    return this.request<{ success: boolean; auditLogs: IAuditLogEntry[] }>(`/events/${eventId}/audit-logs`);
+  }
+
+  // Notifications
+  public async getNotifications(eventId?: string): Promise<{ success: boolean; notifications: INotification[] }> {
+    return this.request<{ success: boolean; notifications: INotification[] }>(`/notifications${eventId ? `?eventId=${eventId}` : ''}`);
+  }
+
+  public async markNotificationRead(id: string): Promise<{ success: boolean; notification: INotification }> {
+    return this.request<{ success: boolean; notification: INotification }>(`/notifications/${id}/read`, {
+      method: 'POST',
+    });
+  }
+
+  public async markAllNotificationsRead(eventId?: string): Promise<{ success: boolean }> {
+    return this.request<{ success: boolean }>('/notifications/read-all', {
+      method: 'POST',
+      body: JSON.stringify({ eventId }),
+    });
+  }
+
+  // Simulations & Briefing
+  public async simulateWhatIf(eventId: string, guestDelta: number, indoorShift: boolean): Promise<{ success: boolean; simulation: IWhatIfSimulation }> {
+    return this.request<{ success: boolean; simulation: IWhatIfSimulation }>(`/events/${eventId}/simulate`, {
+      method: 'POST',
+      body: JSON.stringify({ guestDelta, indoorShift }),
+    });
+  }
+
+  public async generateDailyBriefing(eventId: string): Promise<{ success: boolean; briefing: IDailyBriefing }> {
+    return this.request<{ success: boolean; briefing: IDailyBriefing }>(`/events/${eventId}/briefing`, {
+      method: 'POST',
     });
   }
 }

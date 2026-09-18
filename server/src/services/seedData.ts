@@ -1,4 +1,4 @@
-import { IEvent, ISubEvent, ITask, IVendor, ILogistics, IRiskAlert, IChatMessage, IUser } from '../types';
+import { IEvent, ISubEvent, ITask, IVendor, ILogistics, IRiskAlert, IChatMessage, IUser, IAuditLogEntry, INotification } from '../types';
 
 export const INITIAL_USER: IUser = {
   id: 'usr_demo_01',
@@ -26,6 +26,7 @@ export const INITIAL_EVENTS: IEvent[] = [
     confirmedVendorsCount: 7,
     totalVendorsCount: 7,
     activeRisksCount: 1,
+    lifecycleStage: 'planning',
   },
   {
     id: CORPORATE_EVENT_ID,
@@ -42,6 +43,7 @@ export const INITIAL_EVENTS: IEvent[] = [
     confirmedVendorsCount: 6,
     totalVendorsCount: 6,
     activeRisksCount: 1,
+    lifecycleStage: 'vendor_confirmation',
   },
 ];
 
@@ -180,6 +182,9 @@ export const INITIAL_TASKS: ITask[] = [
     assignee: 'Vikram Mehta',
     dueDate: '2025-11-13',
     estimatedCost: 25000,
+    dependsOn: ['tsk_wed_2'],
+    isBlocked: true,
+    blockedBy: ['tsk_wed_2'],
   },
   {
     id: 'tsk_wed_2',
@@ -259,6 +264,9 @@ export const INITIAL_TASKS: ITask[] = [
     assignee: 'Siddharth Rao',
     dueDate: '2025-10-23',
     estimatedCost: 40000,
+    dependsOn: ['tsk_corp_3'],
+    isBlocked: true,
+    blockedBy: ['tsk_corp_3'],
   },
   {
     id: 'tsk_corp_3',
@@ -497,6 +505,10 @@ export const INITIAL_RISKS: IRiskAlert[] = [
     message: 'Shahi Dawat Caterers requires locked guest count (estimated 400) by Nov 7 to procure organic spices & premium meats without late surcharge.',
     impact: 'Potential 15% procurement penalty and buffet shortages if count is not submitted on time.',
     resolved: false,
+    riskScore: 78,
+    confidence: 0.94,
+    financialImpact: 85000,
+    operationalImpact: 'Catering contract breach penalty if final headcount not submitted 7 days prior.',
     recommendedActions: [
       {
         id: 'act_wed_rsk_1_1',
@@ -524,6 +536,10 @@ export const INITIAL_RISKS: IRiskAlert[] = [
     message: 'Contracted Metro Express fleet capacity is 150 seats, but 200 attendees are departing HQ on Day 1 morning.',
     impact: '50 employees will lack transit to the retreat resort, jeopardizing Day 1 Team Building at 10:30 AM.',
     resolved: false,
+    riskScore: 92,
+    confidence: 0.98,
+    financialImpact: 45000,
+    operationalImpact: '50 attendees stranded at HQ, directly compromising Day 1 agenda and VIP schedule.',
     recommendedActions: [
       {
         id: 'act_corp_rsk_1_1',
@@ -594,3 +610,91 @@ export const INITIAL_CHAT_MESSAGES: Record<string, IChatMessage[]> = {
     },
   ],
 };
+
+export const INITIAL_AUDIT_LOGS: IAuditLogEntry[] = [
+  {
+    id: 'log_wed_001',
+    eventId: WEDDING_EVENT_ID,
+    timestamp: '2025-10-15T09:00:00.000Z',
+    actor: 'Harsh Raghuwanshi (Lead Event Director)',
+    actionType: 'EVENT_INITIALIZED',
+    entityType: 'event',
+    entityId: WEDDING_EVENT_ID,
+    description: 'Initial event baseline created with 400 royal guests and ₹45,00,000 budget.',
+    previousValue: null,
+    newValue: { budget: 4500000, guests: 400 },
+    ruleEvaluated: 'Capacity & Budget Baseline Guard',
+    validationStatus: 'approved',
+  },
+  {
+    id: 'log_wed_002',
+    eventId: WEDDING_EVENT_ID,
+    timestamp: '2025-10-20T14:30:00.000Z',
+    actor: 'PlanCraft AI Engine',
+    actionType: 'RISK_FLAGGED',
+    entityType: 'risk',
+    entityId: 'rsk_wed_1',
+    description: 'Automated deadline radar flagged 7-day catering headcount submission deadline.',
+    ruleEvaluated: 'Vendor Contract SLA Guard',
+    validationStatus: 'flagged',
+  },
+  {
+    id: 'log_corp_001',
+    eventId: CORPORATE_EVENT_ID,
+    timestamp: '2025-10-10T11:00:00.000Z',
+    actor: 'Harsh Raghuwanshi (Lead Event Director)',
+    actionType: 'EVENT_INITIALIZED',
+    entityType: 'event',
+    entityId: CORPORATE_EVENT_ID,
+    description: 'Leadership retreat initialized for 200 employees with ₹18,00,000 budget.',
+    previousValue: null,
+    newValue: { budget: 1800000, guests: 200 },
+    ruleEvaluated: 'Capacity & Budget Baseline Guard',
+    validationStatus: 'approved',
+  },
+  {
+    id: 'log_corp_002',
+    eventId: CORPORATE_EVENT_ID,
+    timestamp: '2025-10-18T16:00:00.000Z',
+    actor: 'PlanCraft AI Engine',
+    actionType: 'CAPACITY_DEFICIT_FLAGGED',
+    entityType: 'logistics',
+    entityId: 'log_corp_1',
+    description: 'Discrepancy detected: Fleet capacity is 150, but total attendees requiring transit is 200.',
+    ruleEvaluated: 'Transit Capacity Guard',
+    validationStatus: 'flagged',
+  },
+];
+
+export const INITIAL_NOTIFICATIONS: INotification[] = [
+  {
+    id: 'notif_1',
+    eventId: WEDDING_EVENT_ID,
+    title: 'Catering Headcount Deadline Looming',
+    message: 'Shahi Dawat Caterers cutoff is in 7 days. 38 RSVPs remain pending.',
+    type: 'warning',
+    timestamp: '10 mins ago',
+    read: false,
+    actionUrl: '/dashboard',
+  },
+  {
+    id: 'notif_2',
+    eventId: CORPORATE_EVENT_ID,
+    title: 'Critical Transit Gap: 50 Stranded Seats',
+    message: 'Metro Express Charters only booked for 150 out of 200 employees.',
+    type: 'error',
+    timestamp: '1 hour ago',
+    read: false,
+    actionUrl: '/dashboard',
+  },
+  {
+    id: 'notif_3',
+    eventId: WEDDING_EVENT_ID,
+    title: 'Mandap Floral Inspection Blocker',
+    message: 'Sound-check & lighting task is blocked pending Mandap canopy inspection completion.',
+    type: 'info',
+    timestamp: '2 hours ago',
+    read: false,
+    actionUrl: '/dashboard',
+  },
+];

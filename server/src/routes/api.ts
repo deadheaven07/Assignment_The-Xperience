@@ -41,4 +41,16 @@ router.get('/risks/:eventId', RiskController.getRisks);
 router.post('/risks/resolve', RiskController.resolveRisk);
 router.post('/risks/action', RiskController.executeAction);
 
+// Audit Trail
+router.get('/events/:id/audit-logs', EventController.getAuditLogs);
+
+// Notifications
+router.get('/notifications', EventController.getNotifications);
+router.post('/notifications/:id/read', EventController.markNotificationRead);
+router.post('/notifications/read-all', EventController.markAllNotificationsRead);
+
+// Cognitive What-If Simulation & Daily Briefing
+router.post('/events/:id/simulate', EventController.simulateWhatIf);
+router.post('/events/:id/briefing', EventController.generateDailyBriefing);
+
 export default router;

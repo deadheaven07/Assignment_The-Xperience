@@ -52,7 +52,7 @@ export class EventController {
   }
 
   public static addTask(req: Request, res: Response) {
-    const { eventId, title, category, priority, assignee, dueDate, estimatedCost } = req.body;
+    const { eventId, title, category, priority, assignee, dueDate, estimatedCost, dependsOn } = req.body;
     const newTask = {
       id: `tsk_${Date.now()}`,
       eventId,
@@ -63,6 +63,7 @@ export class EventController {
       assignee: assignee || 'Unassigned',
       dueDate: dueDate || new Date().toISOString().split('T')[0],
       estimatedCost: estimatedCost || 0,
+      dependsOn: dependsOn || [],
     };
     store.addTask(newTask);
     return res.json({ success: true, task: newTask });
@@ -115,5 +116,42 @@ export class EventController {
     const updated = store.updateLogistics(eventId, req.body);
     RiskEngine.evaluateEventRisks(eventId);
     return res.json({ success: true, logistics: updated });
+  }
+
+  public static getAuditLogs(req: Request, res: Response) {
+    const { id } = req.params;
+    const logs = store.getAuditLogs(id);
+    return res.json({ success: true, auditLogs: logs });
+  }
+
+  public static getNotifications(req: Request, res: Response) {
+    const { eventId } = req.query;
+    const notifications = store.getNotifications(eventId ? String(eventId) : undefined);
+    return res.json({ success: true, notifications });
+  }
+
+  public static markNotificationRead(req: Request, res: Response) {
+    const { id } = req.params;
+    const updated = store.markNotificationRead(id);
+    return res.json({ success: true, notification: updated });
+  }
+
+  public static markAllNotificationsRead(req: Request, res: Response) {
+    const { eventId } = req.body;
+    store.markAllNotificationsRead(eventId);
+    return res.json({ success: true, message: 'All notifications marked as read' });
+  }
+
+  public static simulateWhatIf(req: Request, res: Response) {
+    const { id } = req.params;
+    const { guestDelta = 0, indoorShift = false } = req.body;
+    const simulation = store.simulateWhatIf(id, Number(guestDelta), Boolean(indoorShift));
+    return res.json({ success: true, simulation });
+  }
+
+  public static generateDailyBriefing(req: Request, res: Response) {
+    const { id } = req.params;
+    const briefing = store.generateDailyBriefing(id);
+    return res.json({ success: true, briefing });
   }
 }

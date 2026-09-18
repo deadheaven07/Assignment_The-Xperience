@@ -89,6 +89,21 @@ export const RiskRadar: React.FC<RiskRadarProps> = ({
                     <span className="text-[10px] font-semibold text-slate-600 bg-white/80 px-2 py-0.5 rounded-md border border-slate-200">
                       {risk.type.replace('_', ' ')}
                     </span>
+                    {risk.riskScore && (
+                      <span className="text-[10px] font-bold text-rose-700 bg-rose-100/90 px-2 py-0.5 rounded-md border border-rose-200">
+                        Score: {risk.riskScore}/100
+                      </span>
+                    )}
+                    {risk.confidence && (
+                      <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100/90 px-2 py-0.5 rounded-md border border-emerald-200">
+                        {Math.round(risk.confidence * 100)}% AI Confidence
+                      </span>
+                    )}
+                    {risk.financialImpact && (
+                      <span className="text-[10px] font-bold text-amber-800 bg-amber-100/90 px-2 py-0.5 rounded-md border border-amber-200">
+                        ₹{(risk.financialImpact / 1000).toFixed(0)}k Exposure
+                      </span>
+                    )}
                   </div>
                   <p className="text-xs text-slate-700 mt-1 leading-relaxed">
                     {risk.message}
@@ -96,6 +111,11 @@ export const RiskRadar: React.FC<RiskRadarProps> = ({
                   <p className="text-[11px] text-slate-500 mt-0.5 font-medium italic">
                     Impact: {risk.impact}
                   </p>
+                  {risk.operationalImpact && (
+                    <div className="mt-1.5 p-1.5 rounded bg-white/80 border border-slate-200 text-[11px] text-slate-700">
+                      <span className="font-bold text-[#9E1B32]">Operational Threat:</span> {risk.operationalImpact}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

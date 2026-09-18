@@ -165,50 +165,95 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                     No tasks in {col.title}
                   </div>
                 ) : (
-                  colTasks.map((task) => (
-                    <div
-                      key={task.id}
-                      className="bg-white rounded-lg p-3 border border-[#E6C66E]/40 hover:border-[#D4AF37] shadow-2xs hover:shadow-xs transition-all duration-150 flex flex-col justify-between gap-2"
-                    >
-                      <div>
-                        <div className="flex items-center justify-between gap-1 mb-1.5">
-                          <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded-md bg-[#FAF8F5] text-slate-600 border border-slate-200">
-                            {task.category}
-                          </span>
-                          <span
-                            className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-md ${
-                              task.priority === 'urgent'
-                                ? 'bg-rose-50 text-rose-700 border border-rose-200'
-                                : task.priority === 'high'
-                                ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                                : 'bg-slate-50 text-slate-600 border border-slate-200'
-                            }`}
+                      colTasks.map((task) => {
+                        const blockerTasks = task.blockedBy
+                          ? tasks.filter((t) => task.blockedBy!.includes(t.id))
+                          : [];
+                        const today = new Date();
+                        const due = new Date(task.dueDate);
+                        const diffDays = Math.ceil((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+                        const isOverdue = diffDays < 0 && task.status !== 'done';
+
+                        return (
+                          <div
+                            key={task.id}
+                            className={`bg-white rounded-lg p-3 border ${
+                              task.isBlocked || task.status === 'blocked'
+                                ? 'border-rose-300 bg-rose-50/20'
+                                : 'border-[#E6C66E]/40 hover:border-[#D4AF37]'
+                            } shadow-2xs hover:shadow-xs transition-all duration-150 flex flex-col justify-between gap-2`}
                           >
-                            {task.priority}
-                          </span>
-                        </div>
-                        <h5 className="text-xs font-semibold text-slate-800 leading-snug">
-                          {task.title}
-                        </h5>
-                      </div>
+                            <div>
+                              <div className="flex items-center justify-between gap-1 mb-1.5 flex-wrap">
+                                <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded-md bg-[#FAF8F5] text-slate-600 border border-slate-200">
+                                  {task.category}
+                                </span>
+                                <div className="flex items-center gap-1">
+                                  <span
+                                    className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-md ${
+                                      task.priority === 'urgent'
+                                        ? 'bg-rose-50 text-rose-700 border border-rose-200'
+                                        : task.priority === 'high'
+                                        ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                                        : 'bg-slate-50 text-slate-600 border border-slate-200'
+                                    }`}
+                                  >
+                                    {task.priority}
+                                  </span>
+                                  {task.estimatedCost ? (
+                                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200">
+                                      ₹{(task.estimatedCost / 1000).toFixed(0)}k
+                                    </span>
+                                  ) : null}
+                                </div>
+                              </div>
+                              <h5 className="text-xs font-semibold text-slate-800 leading-snug">
+                                {task.title}
+                              </h5>
 
-                      <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-                        <div className="flex items-center gap-1">
-                          <User className="w-3 h-3 text-slate-400" />
-                          <span className="truncate max-w-[85px]">{task.assignee}</span>
-                        </div>
+                              {/* Blocker Pill */}
+                              {(task.isBlocked || task.status === 'blocked') && (
+                                <div className="mt-1.5 p-1.5 rounded bg-rose-50 border border-rose-200 text-[10px] text-rose-800 flex items-center gap-1 font-medium">
+                                  <span className="font-bold">🔒 Blocked by:</span>
+                                  <span className="truncate">
+                                    {blockerTasks.map((b) => b.title).join(', ') || 'Prerequisite task'}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
 
-                        <button
-                          onClick={() => onUpdateTaskStatus(task.id, getNextStatus(task.status))}
-                          title={`Advance to ${getNextStatus(task.status).replace('_', ' ')}`}
-                          className="flex items-center gap-1 text-[10px] font-bold text-[#9E1B32] hover:text-[#801426] bg-[#FDF2F4] hover:bg-[#FBE4E8] px-2 py-0.5 rounded-md transition-colors"
-                        >
-                          <span>Move</span>
-                          <ArrowRight className="w-2.5 h-2.5" />
-                        </button>
-                      </div>
-                    </div>
-                  ))
+                            <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+                              <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-1">
+                                  <User className="w-3 h-3 text-slate-400" />
+                                  <span className="truncate max-w-[70px]">{task.assignee}</span>
+                                </div>
+                                <span
+                                  className={`text-[10px] font-semibold px-1.5 py-0.5 rounded flex items-center gap-0.5 ${
+                                    isOverdue
+                                      ? 'bg-rose-100 text-rose-800'
+                                      : diffDays <= 3 && task.status !== 'done'
+                                      ? 'bg-amber-100 text-amber-800'
+                                      : 'bg-slate-100 text-slate-600'
+                                  }`}
+                                >
+                                  <Clock className="w-2.5 h-2.5" />
+                                  <span>{isOverdue ? 'Overdue' : `${diffDays}d`}</span>
+                                </span>
+                              </div>
+
+                              <button
+                                onClick={() => onUpdateTaskStatus(task.id, getNextStatus(task.status))}
+                                title={`Advance to ${getNextStatus(task.status).replace('_', ' ')}`}
+                                className="flex items-center gap-1 text-[10px] font-bold text-[#9E1B32] hover:text-[#801426] bg-[#FDF2F4] hover:bg-[#FBE4E8] px-2 py-0.5 rounded-md transition-colors"
+                              >
+                                <span>Move</span>
+                                <ArrowRight className="w-2.5 h-2.5" />
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })
                 )}
               </div>
             </div>
