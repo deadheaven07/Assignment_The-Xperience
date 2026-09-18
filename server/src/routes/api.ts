@@ -23,10 +23,12 @@ router.get('/auth/me', AuthController.me);
 // Events
 router.get('/events', EventController.getEvents);
 router.get('/events/:id', EventController.getEventById);
+router.put('/events/:id', EventController.updateEvent);
 router.post('/events/:id/reset', EventController.resetEvent);
 router.put('/events/sub-events/:id', EventController.updateSubEvent);
 router.post('/events/tasks', EventController.addTask);
 router.put('/events/tasks/:id', EventController.updateTask);
+router.post('/events/:eventId/vendors', EventController.addVendor);
 router.put('/events/vendors/:id', EventController.updateVendor);
 router.put('/events/:eventId/logistics', EventController.updateLogistics);
 

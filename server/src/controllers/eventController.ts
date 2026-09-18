@@ -77,6 +77,39 @@ export class EventController {
     return res.json({ success: true, vendor: updated });
   }
 
+  public static updateEvent(req: Request, res: Response) {
+    const { id } = req.params;
+    const updated = store.updateEvent(id, req.body);
+    if (!updated) {
+      return res.status(404).json({ success: false, message: 'Event not found' });
+    }
+    store.recalculateEventMetrics(id);
+    RiskEngine.evaluateEventRisks(id);
+    const snapshot = store.getEventSnapshot(id);
+    return res.json({ success: true, ...snapshot });
+  }
+
+  public static addVendor(req: Request, res: Response) {
+    const { eventId } = req.params;
+    const { name, category, cost, contactName, phone, email, notes, assignedSubEvents } = req.body;
+    const newVendor = {
+      id: `vnd_${Date.now()}`,
+      eventId,
+      name: name || 'New Partner Vendor',
+      category: category || 'decor',
+      status: 'confirmed' as const,
+      cost: Number(cost) || 0,
+      contactName: contactName || 'Partner Representative',
+      phone: phone || '+91 98765 00000',
+      email: email || 'partner@thexperience.ai',
+      notes: notes || '',
+      assignedSubEvents: assignedSubEvents || [],
+    };
+    store.addVendor(newVendor);
+    RiskEngine.evaluateEventRisks(eventId);
+    return res.json({ success: true, vendor: newVendor });
+  }
+
   public static updateLogistics(req: Request, res: Response) {
     const { eventId } = req.params;
     const updated = store.updateLogistics(eventId, req.body);

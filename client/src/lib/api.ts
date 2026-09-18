@@ -67,6 +67,13 @@ class ApiClient {
     return this.request<{ success: boolean } & IEventSnapshot>(`/events/${eventId}`);
   }
 
+  public async updateEvent(id: string, updates: Partial<IEvent>): Promise<{ success: boolean } & IEventSnapshot> {
+    return this.request<{ success: boolean } & IEventSnapshot>(`/events/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(updates),
+    });
+  }
+
   public async resetEvent(eventId: string): Promise<{ success: boolean; message: string } & IEventSnapshot> {
     return this.request<{ success: boolean; message: string } & IEventSnapshot>(`/events/${eventId}/reset`, {
       method: 'POST',
@@ -98,6 +105,13 @@ class ApiClient {
     return this.request<{ success: boolean; vendor: IVendor }>(`/events/vendors/${id}`, {
       method: 'PUT',
       body: JSON.stringify(updates),
+    });
+  }
+
+  public async addVendor(eventId: string, vendorData: Partial<IVendor>) {
+    return this.request<{ success: boolean; vendor: IVendor }>(`/events/${eventId}/vendors`, {
+      method: 'POST',
+      body: JSON.stringify(vendorData),
     });
   }
 

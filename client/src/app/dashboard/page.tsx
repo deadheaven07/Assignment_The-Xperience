@@ -5,8 +5,9 @@ import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { IEvent, IEventSnapshot, TaskStatus } from '@/lib/types';
 import { Navbar } from '@/components/layout/Navbar';
+import { CommandDrawer } from '@/components/layout/CommandDrawer';
 import { ChatWindow } from '@/components/chat/ChatWindow';
-import { OperationsCockpit } from '@/components/dashboard/OperationsCockpit';
+import { OperationsCockpit, TabType } from '@/components/dashboard/OperationsCockpit';
 import { Loader2 } from 'lucide-react';
 
 export default function DashboardPage() {
@@ -17,6 +18,8 @@ export default function DashboardPage() {
   const [isInitializing, setIsInitializing] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [activeCockpitTab, setActiveCockpitTab] = useState<TabType>('timeline');
 
   // Fetch full snapshot for an event
   const loadEventSnapshot = useCallback(async (eventId: string) => {
@@ -148,7 +151,7 @@ export default function DashboardPage() {
       };
 
       if (actionType === 'NAVIGATE_TAB') {
-        // Just client side or no-op
+        if (payload?.tab) setActiveCockpitTab(payload.tab as TabType);
         return;
       }
 
@@ -177,6 +180,65 @@ export default function DashboardPage() {
       console.error('Error executing risk action:', err);
     } finally {
       setIsProcessing(false);
+    }
+  };
+
+  // Update Event core and logistics details from Command Drawer
+  const handleUpdateEventDetails = async (updates: {
+    title?: string;
+    location?: string;
+    startDate?: string;
+    endDate?: string;
+    totalGuests?: number;
+    budget?: number;
+    fleetCapacityRequired?: number;
+    fleetCapacityAllocated?: number;
+    hotelRoomsRequired?: number;
+    hotelRoomsBooked?: number;
+  }) => {
+    try {
+      const eventUpdates: Partial<IEvent> = {};
+      if (updates.title !== undefined) eventUpdates.title = updates.title;
+      if (updates.location !== undefined) eventUpdates.location = updates.location;
+      if (updates.startDate !== undefined) eventUpdates.startDate = updates.startDate;
+      if (updates.endDate !== undefined) eventUpdates.endDate = updates.endDate;
+      if (updates.totalGuests !== undefined) eventUpdates.totalGuests = updates.totalGuests;
+      if (updates.budget !== undefined) eventUpdates.budget = updates.budget;
+
+      await api.updateEvent(selectedEventId, eventUpdates);
+
+      if (
+        updates.fleetCapacityRequired !== undefined ||
+        updates.fleetCapacityAllocated !== undefined ||
+        updates.hotelRoomsRequired !== undefined ||
+        updates.hotelRoomsBooked !== undefined
+      ) {
+        await api.updateLogistics(selectedEventId, {
+          fleetCapacityRequired: updates.fleetCapacityRequired,
+          fleetCapacityAllocated: updates.fleetCapacityAllocated,
+          hotelRoomsRequired: updates.hotelRoomsRequired,
+          hotelRoomsBooked: updates.hotelRoomsBooked,
+        });
+      }
+
+      await loadEventSnapshot(selectedEventId);
+      const eventsRes = await api.getEvents();
+      if (eventsRes.success) setEvents(eventsRes.events);
+    } catch (err: any) {
+      console.error('Failed to update event details:', err);
+      throw err;
+    }
+  };
+
+  // Add Partner Vendor from Command Drawer
+  const handleAddVendor = async (vendorData: any) => {
+    try {
+      const res = await api.addVendor(selectedEventId, vendorData);
+      if (res.success) {
+        await loadEventSnapshot(selectedEventId);
+      }
+    } catch (err: any) {
+      console.error('Failed to add vendor:', err);
     }
   };
 
@@ -223,10 +285,27 @@ export default function DashboardPage() {
 
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-[#FAF8F5]">
-      {/* 1. Global Navigation Bar */}
-      <Navbar />
+      {/* 1. Global Navigation Bar with Drawer Trigger */}
+      <Navbar onOpenDrawer={() => setIsDrawerOpen(true)} />
 
-      {/* 2. DUAL-PANE REACTIVE ARCHITECTURE */}
+      {/* 2. Side Command Drawer & Event Settings Hub */}
+      <CommandDrawer
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        events={events}
+        selectedEventId={selectedEventId}
+        onSelectEvent={handleSelectEvent}
+        snapshot={snapshot}
+        onNavigateTab={(tabKey) => setActiveCockpitTab(tabKey as TabType)}
+        onSendMessage={handleSendMessage}
+        onResetEvent={handleResetEvent}
+        onUpdateEventDetails={handleUpdateEventDetails}
+        onAddTask={handleAddTask}
+        onAddVendor={handleAddVendor}
+        isResetting={isResetting}
+      />
+
+      {/* 3. DUAL-PANE REACTIVE ARCHITECTURE */}
       <main className="flex-1 flex flex-col lg:flex-row overflow-hidden">
         {/* Left Pane (38% Width): Conversational AI Co-Pilot */}
         <section className="w-full lg:w-[38%] h-1/2 lg:h-full shrink-0 border-r border-[#E6C66E]/40 z-10 flex flex-col">
@@ -251,6 +330,8 @@ export default function DashboardPage() {
             onUpdateTaskStatus={handleUpdateTaskStatus}
             onAddTask={handleAddTask}
             isLoading={isProcessing}
+            currentTab={activeCockpitTab}
+            onTabChange={setActiveCockpitTab}
           />
         </section>
       </main>

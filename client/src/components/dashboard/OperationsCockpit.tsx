@@ -17,9 +17,11 @@ interface OperationsCockpitProps {
   onUpdateTaskStatus: (taskId: string, newStatus: TaskStatus) => void;
   onAddTask: (task: any) => void;
   isLoading?: boolean;
+  currentTab?: TabType;
+  onTabChange?: (tab: TabType) => void;
 }
 
-type TabType = 'timeline' | 'kanban' | 'vendors' | 'logistics' | 'budget';
+export type TabType = 'timeline' | 'kanban' | 'vendors' | 'logistics' | 'budget';
 
 export const OperationsCockpit: React.FC<OperationsCockpitProps> = ({
   snapshot,
@@ -27,8 +29,15 @@ export const OperationsCockpit: React.FC<OperationsCockpitProps> = ({
   onUpdateTaskStatus,
   onAddTask,
   isLoading = false,
+  currentTab,
+  onTabChange,
 }) => {
-  const [activeTab, setActiveTab] = useState<TabType>('timeline');
+  const [internalTab, setInternalTab] = useState<TabType>('timeline');
+  const activeTab = currentTab !== undefined ? currentTab : internalTab;
+  const setActiveTab = (t: TabType) => {
+    setInternalTab(t);
+    if (onTabChange) onTabChange(t);
+  };
   const { event, subEvents, tasks, vendors, logistics, risks } = snapshot;
 
   if (!event) {
