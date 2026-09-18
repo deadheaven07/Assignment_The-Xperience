@@ -2,7 +2,7 @@ import { IEvent, ISubEvent, ITask, IVendor, ILogistics, IRiskAlert, IChatMessage
 
 export const INITIAL_USER: IUser = {
   id: 'usr_demo_01',
-  name: 'Ananya Sharma',
+  name: 'Harsh Raghuwanshi',
   email: 'planner@thexperience.ai',
   role: 'Lead Event Director',
 };

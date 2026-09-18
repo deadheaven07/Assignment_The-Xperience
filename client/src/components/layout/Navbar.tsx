@@ -23,7 +23,7 @@ export const Navbar: React.FC = () => {
       <div className="flex items-center gap-3">
         <div className="hidden md:flex items-center gap-2 px-2.5 py-1 bg-[#FAF8F5] rounded-full border border-[#E6C66E]/40 text-xs">
           <span className="w-2 h-2 rounded-full bg-emerald-500" />
-          <span className="font-semibold text-slate-700">Ananya Sharma</span>
+          <span className="font-semibold text-slate-700">Harsh Raghuwanshi</span>
           <span className="text-slate-400 text-[11px]">(Lead Event Director)</span>
         </div>
 
