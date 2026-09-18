@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import apiRoutes from './routes/api';
@@ -17,7 +17,7 @@ const allowedOrigins = [
 ].filter(Boolean) as string[];
 
 app.use(cors({
-  origin: (origin, callback) => {
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
     // allow requests with no origin (like mobile apps, curl, server-to-server)
     if (!origin) return callback(null, true);
     if (
@@ -38,7 +38,7 @@ app.use(express.json());
 app.use('/api', apiRoutes);
 
 // Root
-app.get('/', (req, res) => {
+app.get('/', (req: Request, res: Response) => {
   res.json({
     name: 'PlanCraft AI API Server',
     description: 'The Xperience - Autonomous Event Operations Platform',

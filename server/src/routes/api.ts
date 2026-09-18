@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { AuthController } from '../controllers/authController';
 import { EventController } from '../controllers/eventController';
 import { ChatController } from '../controllers/chatController';
@@ -7,7 +7,7 @@ import { RiskController } from '../controllers/riskController';
 const router = Router();
 
 // Health Check
-router.get('/health', (req, res) => {
+router.get('/health', (req: Request, res: Response) => {
   res.json({
     status: 'online',
     platform: 'PlanCraft AI by The Xperience',
