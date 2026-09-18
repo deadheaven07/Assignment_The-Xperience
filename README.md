@@ -90,7 +90,61 @@ To ensure reviewers can evaluate the platform in seconds without setup roadblock
   - **1-Click AI Remedies**:
     - `[Book 50-Seater Tempo Fleet (+₹45,000)]` -> Instantly restores capacity to 200/200, updates logistics, marks Kanban task as done, and clears the alert.
     - `[Split into 2 Departure Waves]` -> Staggers departures into 07:00 AM & 08:30 AM batches.
-  - **Schedule Shift**: "CEO arriving Day 2 via helicopter -> Move Keynote" shifts schedule to 11:00 AM.
+---
+
+## 🧠 Product Thinking & Engineering Answers to Assignment Questions
+
+The assessment prompt asks critical open-ended questions. Here is how PlanCraft AI answers each one through product architecture and design:
+
+### 1. How should conversations be converted into meaningful actions?
+- **The Problem:** Conversations are messy, colloquial, and emotional ("Oh no, the photographer can't make it to the reception!").
+- **Our Solution:** We run a **Two-Tier Extraction Pipeline**:
+  1. **Semantic Extraction:** The LLM identifies entities (Vendors, Timelines, Headcounts, Budgets) and assigns an operational intent (`CONFIRM`, `MODIFY`, `FLAG_GAP`, `SHIFT_TIME`).
+  2. **Atomic State Mutation:** Instead of returning plain text, the AI generates typed action payloads (e.g. `UPDATE_VENDOR_STATUS`, `REALLOCATE_BUDGET`, `INSERT_KANBAN_TASK`). The backend applies these atomically so the dashboard reflects the change without page reloads.
+
+### 2. What information is most important for an Event Manager?
+Through our Event Operations analysis, we identified that Event Managers care about **5 Core Operational Dimensions**:
+1. **The Domino Timeline:** Which ceremonies happen when, and what moves if one shifts?
+2. **Actionable Task Velocity (Kanban):** What is blocked vs. in-progress vs. complete?
+3. **Vendor Procurement Status:** Who is signed, who is pending, and where is the coverage gap?
+4. **Logistics & Headcount Ratios:** Total guests vs. hotel room blocks, airport cabs vs. arrivals, bus seats vs. attendees.
+5. **Fiscal Burn & Variance:** Allocated budget vs. committed expenses in INR.
+
+### 3. How should tasks, deadlines, dependencies, and updates be managed?
+- **Dynamic Dependency Graphs:** Tasks are not isolated notes; they are bound to sub-events. For example, moving the *Leadership Keynote* to Day 2 automatically rebinds the *AV & Stage Setup* dependency to Day 2.
+- **Automated Deadline Countdown ($T - N$):** Crucial supplier cutoffs (e.g. Catering headcount confirmation 7 days prior) are converted into hard countdown milestones with priority badges.
+
+### 4. Can AI identify risks, gaps, or potential issues?
+- **Yes, via our Autonomous Heuristic & Semantic Risk Engine:**
+  - **Capacity Mismatch Detection:** When vehicles fit 150 but headcount is 200, the system flags a **Critical 50-PAX Capacity Deficit**.
+  - **Single-Point-of-Failure (SPOF) Gap Detection:** When a vendor cancels for a core sub-event (e.g. Reception Photography), the system flags an **Urgent Vendor Gap** and calculates the uncovered budget.
+  - **Imminent SLA Breaches:** Flags vendor contract sign-offs that are within critical lead times.
+
+### 5. Can the system proactively suggest actions to the Event Manager?
+- **1-Click Remediation vs. Passive Advice:** Most chatbots say *"You should consider finding another bus."* PlanCraft AI generates **1-Click Action Buttons**:
+  - `[Book 50-Seater Tempo Traveler (+₹45,000)]` $\rightarrow$ Clicking this button calls the backend, updates fleet capacity to 200/200, adds a procurement task to the Kanban board, and clears the alert.
+  - `[Dispatch RFP to 3 Vetted Backup Photographers]` $\rightarrow$ Immediately shortlists replacement studios and creates an emergency contract task.
+
+### 6. How should the information be visualised on the dashboard?
+- **Dual-Pane Reactive Workspace:** 
+  - **Left Pane (38%):** Conversational AI Co-Pilot with real-time extracted tags, scenario presets, and action chips.
+  - **Right Pane (62%):** Interactive Operations Cockpit with an Executive KPI Bar, a Proactive Risk Radar banner, and tabbed deep-dives (Timeline, Kanban, Vendors, Logistics, and Recharts Budget Analytics).
+- **Luxury Hospitality Design System:** Styled using a warm, royal Indian wedding palette (`#FAF8F5` Silk Ivory, `#9E1B32` Royal Crimson, `#D4AF37` Champagne Gold, `#EAA221` Marigold) to look and feel like an enterprise SaaS platform for high-end event directors.
+
+---
+
+## 📐 Key Assumptions & Design Decisions
+
+1. **Evaluator-First Zero Friction Assumption:** 
+   - *Assumption:* Evaluators will test on diverse local machines without pre-configured MongoDB or active Gemini API keys.
+   - *Decision:* Built transparent dual fallbacks: an in-memory data store for MongoDB, and a deterministic semantic NLP parser for Gemini. Zero setup failure risk.
+2. **Dual-Scenario Architectural Assumption:**
+   - *Assumption:* Event managers oversee multiple event archetypes simultaneously.
+   - *Decision:* Implemented a universal event schema capable of handling both multi-day social celebrations (Weddings) and structured enterprise offsites (Corporate Retreats) via an instant Event Switcher.
+3. **Double Occupancy Rule for Hospitality:**
+   - *Assumption:* When 150 out-of-town guests arrive, room requirements default to $\lceil 150 / 2 \rceil = 75$ rooms, with dynamic adjustment available via the Command Drawer.
+4. **Security & Secrets Isolation:**
+   - *Decision:* API keys strictly reside in the Node.js backend. The frontend communicates exclusively via authenticated REST endpoints and JWT tokens.
 
 ---
 
@@ -108,8 +162,8 @@ Assignment/
 │   │   ├── components/
 │   │   │   ├── chat/                 # EventSwitcher, ScenarioPresetBar, MessageBubble, ChatInput
 │   │   │   ├── dashboard/            # MetricsHeader, RiskRadar, TimelineView, KanbanBoard, VendorGrid, LogisticsMatrix, BudgetAnalytics
-│   │   │   ├── layout/               # Navbar with branding & profile
-│   │   │   └── ui/                   # GoldBadge, StatusPill, MetricCard
+│   │   │   ├── layout/               # Navbar with branding & CommandDrawer (Settings & Quick Hub)
+│   │   │   └── ui/                   # Logo (handcrafted luxury SVG mark), GoldBadge, StatusPill, MetricCard
 │   │   ├── lib/                      # api.ts, types.ts, colorPalette.ts
 │   │   ├── .env.example
 │   │   └── package.json
