@@ -1,0 +1,16 @@
+{
+  "name": "the-xperience-plancraft",
+  "version": "1.0.0",
+  "description": "PlanCraft AI by The Xperience - Autonomous Event Operations Platform",
+  "scripts": {
+    "dev:server": "npm --prefix server run dev",
+    "dev:client": "npm --prefix client run dev",
+    "build:server": "npm --prefix server run build",
+    "build:client": "npm --prefix client run build",
+    "start:server": "npm --prefix server run start",
+    "start:client": "npm --prefix client run start"
+  },
+  "keywords": ["event-management", "nextjs", "express", "ai", "gemini", "the-xperience"],
+  "author": "The Xperience",
+  "license": "MIT"
+}

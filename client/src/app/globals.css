@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+:root {
+  --bg-canvas: #FAF8F5;
+  --bg-surface: #FFFDF9;
+  --bg-card: #FFFFFF;
+  --royal-crimson: #9E1B32;
+  --crimson-hover: #801426;
+  --crimson-light: #FDF2F4;
+  --crimson-border: #F7D6DC;
+  --champagne-gold: #D4AF37;
+  --gold-border: #E6C66E;
+  --gold-pale: #FDFBF2;
+  --festive-marigold: #EAA221;
+  --marigold-light: #FEF6E9;
+  --marigold-border: #F9DCB0;
+  --deep-charcoal: #1E293B;
+  --slate-muted: #64748B;
+}
+
+body {
+  background-color: var(--bg-canvas);
+  color: var(--deep-charcoal);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Outfit', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Custom Sleek Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #FAF8F5;
+}
+::-webkit-scrollbar-thumb {
+  background: #E6C66E;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #D4AF37;
+}
+
+/* Subtle Shimmer Animation for Royal Accents */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.gold-shimmer {
+  background: linear-gradient(90deg, rgba(212,175,55,0.1) 0%, rgba(212,175,55,0.3) 50%, rgba(212,175,55,0.1) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite;
+}
+
+/* Luxury card shadows */
+.luxury-card {
+  background: #FFFFFF;
+  border: 1px solid rgba(230, 198, 110, 0.4);
+  box-shadow: 0 4px 20px -2px rgba(158, 27, 50, 0.04), 0 2px 6px -1px rgba(212, 175, 55, 0.06);
+  transition: all 0.2s ease-in-out;
+}
+
+.luxury-card:hover {
+  border-color: rgba(212, 175, 55, 0.7);
+  box-shadow: 0 10px 25px -3px rgba(158, 27, 50, 0.08), 0 4px 10px -2px rgba(212, 175, 55, 0.12);
+}
+
+.crimson-gradient {
+  background: linear-gradient(135deg, #9E1B32 0%, #801426 100%);
+}
+
+.gold-gradient {
+  background: linear-gradient(135deg, #E6C66E 0%, #D4AF37 50%, #B89428 100%);
+}
+
+.marigold-gradient {
+  background: linear-gradient(135deg, #F5B041 0%, #EAA221 100%);
+}
