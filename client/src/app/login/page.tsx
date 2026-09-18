@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
+import { Logo } from '@/components/ui/Logo';
 import { Crown, Sparkles, ArrowRight, ShieldCheck, CheckCircle2, Lock } from 'lucide-react';
 
 export default function LoginPage() {
@@ -59,16 +60,8 @@ export default function LoginPage() {
       <div className="w-full max-w-md bg-white rounded-2xl border border-[#E6C66E]/60 shadow-[0_12px_40px_rgba(158,27,50,0.06)] p-8 relative z-10">
         {/* Header Branding */}
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#9E1B32] to-[#801426] text-white shadow-md mb-3 border border-[#E6C66E]/40">
-            <Crown className="w-7 h-7 text-[#D4AF37]" />
-          </div>
-          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
-            PlanCraft <span className="text-[#9E1B32]">AI</span>
-          </h1>
-          <p className="text-xs font-semibold text-[#B89428] uppercase tracking-wider mt-0.5">
-            The Xperience • Executive Assessment Platform
-          </p>
-          <p className="text-xs text-slate-500 mt-2">
+          <Logo size="lg" variant="vertical" subtitle="THE XPERIENCE • ASSESSMENT PLATFORM" />
+          <p className="text-xs text-slate-500 mt-2.5 max-w-xs mx-auto">
             Autonomous Multi-Scenario Event Management & Conversational Cockpit
           </p>
         </div>

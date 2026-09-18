@@ -4,6 +4,7 @@ import React from 'react';
 import { Sparkles, Crown, UserCheck, LogOut } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
+import { Logo } from '@/components/ui/Logo';
 
 export const Navbar: React.FC = () => {
   const router = useRouter();
@@ -15,25 +16,8 @@ export const Navbar: React.FC = () => {
 
   return (
     <header className="bg-white/95 backdrop-blur-md border-b border-[#E6C66E]/40 px-4 py-2.5 flex items-center justify-between z-30 shrink-0">
-      {/* Brand & Logo */}
-      <div className="flex items-center gap-3">
-        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#9E1B32] to-[#801426] flex items-center justify-center text-white shadow-xs">
-          <Crown className="w-4 h-4 text-[#D4AF37]" />
-        </div>
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-base font-extrabold tracking-tight text-slate-900">
-              PlanCraft <span className="text-[#9E1B32]">AI</span>
-            </h1>
-            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#FDFBF2] text-[#B89428] border border-[#E6C66E]">
-              The Xperience
-            </span>
-          </div>
-          <p className="text-[11px] text-slate-500 hidden sm:block">
-            Autonomous Multi-Scenario Event Management Platform
-          </p>
-        </div>
-      </div>
+      {/* Redesigned Luxury Brand & Logo */}
+      <Logo size="md" />
 
       {/* User Info & Actions */}
       <div className="flex items-center gap-3">
