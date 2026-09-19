@@ -1,5 +1,5 @@
 # PlanCraft AI — Production-Grade Event Management Platform
-> **Created for "The Xperience" SDE Intern Assessment**
+> **Created for "The Xperience" SDE – Full Stack Developer Assestment**
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-success?style=for-the-badge&logo=vercel)](https://assignment-the-xperience-on3dfzg0t-harsh-raghuwanshis-projects.vercel.app/login)
 [![API Server](https://img.shields.io/badge/API%20Server-Render-informational?style=for-the-badge&logo=render)](https://plancraft-backend.onrender.com)
